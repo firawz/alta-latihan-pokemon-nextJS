@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import { useFetchData } from '../../../src/CustomHooks/useFetchData';
+import { usePokemonContext } from '../../../src/Provider/Pokemon';
 
 export default function IDPokemon() {
-  const [pokemon, setPokemon] = useState([]);
-  const [img, setImg] = useState('');
   const Router = useRouter();
   const {
     query: { name },
   } = Router;
+  const { data, loading } = useFetchData(
+    name ? `https://pokeapi.co/api/v2/pokemon/${name}` : ''
+  );
+  const pokemon = data?.name;
+  const img = data.sprites?.other['official-artwork']?.front_default;
 
-  useEffect(() => {
-    const getPokemon = async name => {
-      const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-      const data = await response.json();
-      console.log(data);
-      setPokemon(data);
-      setImg(data.sprites.other['official-artwork'].front_default);
-    };
-    if (name) {
-      getPokemon(name);
-    }
-  }, [name]);
+  if (loading) {
+    return <h1>lagi loading</h1>;
+  }
+
+  const { state } = usePokemonContext();
+
+  console.log(state);
 
   return (
     <div>
-      <h1>{pokemon.name}</h1>
+      <h1>{pokemon}</h1>
       <img src={img} />
     </div>
   );

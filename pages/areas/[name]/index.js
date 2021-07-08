@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-
+import { usePokemonContext } from '../../../src/Provider/Pokemon';
+// import Img from 'next/image'
 export default function AreaName() {
   const Router = useRouter();
   const {
@@ -10,6 +11,7 @@ export default function AreaName() {
   const [listPokemon, setListPokemon] = useState([]);
   const [img, setImg] = useState([]);
   const [id, setId] = useState([]);
+
   useEffect(() => {
     const getPokemons = async name => {
       const resp = await fetch(
@@ -49,30 +51,46 @@ export default function AreaName() {
     if (id) {
       getImg();
     }
-  }, [id]);
+  }, [id, listPokemon]);
 
   const getId = id => {
     return id.pokemon.url.split('/')[6];
   };
 
+  const { state, dispatch } = usePokemonContext();
+
+  useEffect(() => {
+    console.log(state);
+  }, [state]);
   return (
     <div>
       <h1>{name}</h1>
       <h2> you will encounter this pokemon in this area </h2>
       {listPokemon.map((e, i) => {
         return (
-          <Link
+          <div
             key={e.pokemon?.url}
-            passHref
-            href={`/pokemons/${e.pokemon.name}`}
+            onClick={() => {
+              // console.log(e.pokemon.name);
+              // console.log(state.catchedPokemons);
+              dispatch({
+                type: 'CATCH_POKEMON',
+                payload: e.pokemon?.name,
+              });
+            }}
           >
-            <div>
-              <h3>{e.pokemon?.name}</h3>
-              <img src={e.img} />
-            </div>
-          </Link>
+            <h3>{e.pokemon?.name}</h3>
+            <img src={e.img} />
+          </div>
         );
       })}
     </div>
   );
 }
+
+// <Link
+//   key={e.pokemon?.url}
+//   passHref
+//   href={`/pokemons/${e.pokemon.name}`}
+// >
+//   </Link>
