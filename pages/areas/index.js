@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePokemonContext } from '../../src/Provider/Pokemon';
 
 export default function Areas() {
   const [areas, setAreas] = useState([]);
+
   useEffect(() => {
     const getArea = async () => {
       const resp = await fetch('https://pokeapi.co/api/v2/location-area');
